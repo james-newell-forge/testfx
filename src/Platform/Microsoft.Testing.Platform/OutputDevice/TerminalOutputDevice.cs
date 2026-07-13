@@ -63,6 +63,9 @@ internal sealed partial class TerminalOutputDevice : IHotReloadPlatformOutputDev
     // required. The list stays empty (and effectively unused) outside JSON mode.
     private readonly List<TestNode> _discoveredTestsForJson = [];
 
+    private readonly List<TestCoverageMessage> _coverageEntries = [];
+    private readonly List<TestCoverageThresholdMessage> _coverageThresholdEntries = [];
+
     private TerminalTestReporter? _terminalTestReporter;
     private bool _bannerDisplayed;
     private bool _isListTests;
@@ -119,6 +122,8 @@ internal sealed partial class TerminalOutputDevice : IHotReloadPlatformOutputDev
         typeof(TestNodeUpdateMessage),
         typeof(SessionFileArtifact),
         typeof(FileArtifact),
+        typeof(TestCoverageMessage),
+        typeof(TestCoverageThresholdMessage),
     ];
 
     /// <inheritdoc />

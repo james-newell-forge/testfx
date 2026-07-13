@@ -161,6 +161,14 @@ internal sealed partial class TerminalOutputDevice
             {
                 _terminalTestReporter.PrintOutOfProcessArtifacts();
             }
+
+            // Coverage messages may be produced in either the test host (in-process) or the
+            // test host controller (out-of-process, e.g. via ITestHostProcessLifetimeHandler),
+            // so render the summary regardless of the process role.
+            if (_coverageEntries.Count > 0 || _coverageThresholdEntries.Count > 0)
+            {
+                _terminalTestReporter.AppendCoverageSummary(_coverageEntries, _coverageThresholdEntries);
+            }
         }
     }
 }

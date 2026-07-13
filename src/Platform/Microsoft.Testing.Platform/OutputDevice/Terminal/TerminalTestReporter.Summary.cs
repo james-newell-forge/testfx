@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
+using Microsoft.Testing.Platform.Extensions.Messages;
 using Microsoft.Testing.Platform.Helpers;
 
 namespace Microsoft.Testing.Platform.OutputDevice.Terminal;
@@ -408,5 +409,47 @@ internal sealed partial class TerminalTestReporter
         terminal.Append(' ');
         terminal.Append(MakeControlCharactersVisible(displayName, true));
         terminal.AppendLine();
+    }
+
+    internal void AppendCoverageSummary(IReadOnlyList<TestCoverageMessage> coverageEntries, IReadOnlyList<TestCoverageThresholdMessage> thresholdEntries)
+        => _terminalWithProgress.WriteToTerminal(terminal => AppendCoverageSummary(terminal, coverageEntries, thresholdEntries));
+
+    private static void AppendCoverageSummary(ITerminal terminal, IReadOnlyList<TestCoverageMessage> coverageEntries, IReadOnlyList<TestCoverageThresholdMessage> thresholdEntries)
+    {
+        if (coverageEntries.Count == 0 && thresholdEntries.Count == 0)
+        {
+            return;
+        }
+
+        terminal.AppendLine();
+
+        if (coverageEntries.Count > 0)
+        {
+            terminal.AppendLine($"{SingleIndentation}Code Coverage Summary:");
+
+            foreach (TestCoverageMessage entry in coverageEntries)
+            {
+                terminal.Append(DoubleIndentation);
+                terminal.AppendLine($"{entry.ModuleName} - {entry.CoverageType}: {entry.Value:F1}%");
+            }
+        }
+
+        if (thresholdEntries.Count > 0)
+        {
+            terminal.AppendLine();
+            terminal.AppendLine($"{SingleIndentation}Coverage Threshold Results:");
+
+            foreach (TestCoverageThresholdMessage entry in thresholdEntries)
+            {
+                bool passed = entry.Status == CoverageThresholdStatus.Passed;
+                terminal.SetColor(passed ? TerminalColor.DarkGreen : TerminalColor.DarkRed);
+                terminal.Append(DoubleIndentation);
+                string comparison = passed
+                    ? $"{entry.Value:F1}% >= {entry.Threshold:F1}% threshold"
+                    : $"{entry.Value:F1}% < {entry.Threshold:F1}% threshold";
+                terminal.AppendLine($"{entry.CoverageType} ({entry.Stat}): {comparison}");
+                terminal.ResetColor();
+            }
+        }
     }
 }

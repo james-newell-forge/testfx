@@ -96,6 +96,16 @@ internal sealed class ConsoleTestHost(
             statistics = testApplicationResult.GetStatistics();
             exitCode = testApplicationResult.GetProcessExitCode();
 
+            // Check coverage threshold failures
+            if (exitCode == (int)ExitCode.Success)
+            {
+                ITestCoverageResult? coverageResult = ServiceProvider.GetService<ITestCoverageResult>();
+                if (coverageResult?.HasCoverageThresholdFailure == true)
+                {
+                    exitCode = (int)ExitCode.CoverageThresholdFailed;
+                }
+            }
+
             await _logger.LogInformationAsync($"Test session '{ServiceProvider.GetTestSessionContext().SessionUid}' ended with exit code '{exitCode}' in {consoleRunStarted.Elapsed}").ConfigureAwait(false);
 
             // We collect info about the extensions before the dispose to avoid possible issue with cleanup.

@@ -320,6 +320,8 @@ internal sealed partial class TestHostBuilder
             context.PoliciesService,
             serviceProvider.GetPlatformOTelService()));
 
+        serviceProvider.AddService(new TestCoverageResult());
+
         ChatClientManager.BuildChatClients(serviceProvider);
 
         return context;
