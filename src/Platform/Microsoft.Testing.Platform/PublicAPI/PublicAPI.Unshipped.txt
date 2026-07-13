@@ -21,6 +21,7 @@ Microsoft.Testing.Platform.Extensions.Messages.TestCoverageMessage.CoverageType.
 Microsoft.Testing.Platform.Extensions.Messages.TestCoverageMessage.ModuleName.get -> string!
 Microsoft.Testing.Platform.Extensions.Messages.TestCoverageMessage.TestCoverageMessage(string! moduleName, double value, Microsoft.Testing.Platform.Extensions.Messages.CoverageType coverageType) -> void
 Microsoft.Testing.Platform.Extensions.Messages.TestCoverageMessage.Value.get -> double
+override Microsoft.Testing.Platform.Extensions.Messages.TestCoverageMessage.ToString() -> string!
 Microsoft.Testing.Platform.Extensions.Messages.TestCoverageThresholdMessage
 Microsoft.Testing.Platform.Extensions.Messages.TestCoverageThresholdMessage.CoverageType.get -> Microsoft.Testing.Platform.Extensions.Messages.CoverageType
 Microsoft.Testing.Platform.Extensions.Messages.TestCoverageThresholdMessage.Statistic.get -> Microsoft.Testing.Platform.Extensions.Messages.CoverageThresholdStatistic
@@ -28,3 +29,4 @@ Microsoft.Testing.Platform.Extensions.Messages.TestCoverageThresholdMessage.Stat
 Microsoft.Testing.Platform.Extensions.Messages.TestCoverageThresholdMessage.TestCoverageThresholdMessage(double value, double threshold, Microsoft.Testing.Platform.Extensions.Messages.CoverageType coverageType, Microsoft.Testing.Platform.Extensions.Messages.CoverageThresholdStatus status, Microsoft.Testing.Platform.Extensions.Messages.CoverageThresholdStatistic statistic) -> void
 Microsoft.Testing.Platform.Extensions.Messages.TestCoverageThresholdMessage.Threshold.get -> double
 Microsoft.Testing.Platform.Extensions.Messages.TestCoverageThresholdMessage.Value.get -> double
+override Microsoft.Testing.Platform.Extensions.Messages.TestCoverageThresholdMessage.ToString() -> string!

@@ -57,6 +57,46 @@ public sealed class TestCoverageMessage : PropertyBagData
     /// Gets the type of coverage measurement.
     /// </summary>
     public CoverageType CoverageType { get; }
+
+    /// <inheritdoc/>
+    public override string ToString()
+    {
+        StringBuilder builder = new StringBuilder("TestCoverageMessage { DisplayName = ")
+            .Append(DisplayName)
+            .Append(", Description = ")
+            .Append(Description)
+            .Append(", ModuleName = ")
+            .Append(ModuleName)
+            .Append(", Value = ")
+            .Append(Value.ToString("F1", CultureInfo.InvariantCulture))
+            .Append(", CoverageType = ")
+            .Append(CoverageType)
+            .Append(", Properties = [");
+
+        bool hasAnyProperty = false;
+        foreach (IProperty property in Properties)
+        {
+            if (!hasAnyProperty)
+            {
+                hasAnyProperty = true;
+            }
+            else
+            {
+                builder.Append(',');
+            }
+
+            builder.Append(' ').Append(property);
+        }
+
+        if (hasAnyProperty)
+        {
+            builder.Append(' ');
+        }
+
+        builder.Append("] }");
+
+        return builder.ToString();
+    }
 }
 
 /// <summary>
@@ -143,4 +183,48 @@ public sealed class TestCoverageThresholdMessage : PropertyBagData
     /// Gets the statistical method used for comparison.
     /// </summary>
     public CoverageThresholdStatistic Statistic { get; }
+
+    /// <inheritdoc/>
+    public override string ToString()
+    {
+        StringBuilder builder = new StringBuilder("TestCoverageThresholdMessage { DisplayName = ")
+            .Append(DisplayName)
+            .Append(", Description = ")
+            .Append(Description)
+            .Append(", Value = ")
+            .Append(Value.ToString("F1", CultureInfo.InvariantCulture))
+            .Append(", Threshold = ")
+            .Append(Threshold.ToString("F1", CultureInfo.InvariantCulture))
+            .Append(", CoverageType = ")
+            .Append(CoverageType)
+            .Append(", Status = ")
+            .Append(Status)
+            .Append(", Statistic = ")
+            .Append(Statistic)
+            .Append(", Properties = [");
+
+        bool hasAnyProperty = false;
+        foreach (IProperty property in Properties)
+        {
+            if (!hasAnyProperty)
+            {
+                hasAnyProperty = true;
+            }
+            else
+            {
+                builder.Append(',');
+            }
+
+            builder.Append(' ').Append(property);
+        }
+
+        if (hasAnyProperty)
+        {
+            builder.Append(' ');
+        }
+
+        builder.Append("] }");
+
+        return builder.ToString();
+    }
 }

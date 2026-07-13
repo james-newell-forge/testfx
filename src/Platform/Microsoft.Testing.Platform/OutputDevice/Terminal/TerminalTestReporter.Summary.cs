@@ -430,7 +430,7 @@ internal sealed partial class TerminalTestReporter
             foreach (TestCoverageMessage entry in coverageEntries)
             {
                 terminal.Append(DoubleIndentation);
-                terminal.AppendLine($"{entry.ModuleName} - {entry.CoverageType}: {entry.Value:F1}%");
+                terminal.AppendLine($"{entry.ModuleName} - {entry.CoverageType}: {entry.Value.ToString("F1", CultureInfo.InvariantCulture)}%");
             }
         }
 
@@ -447,8 +447,8 @@ internal sealed partial class TerminalTestReporter
                 string comparison = string.Format(
                     CultureInfo.CurrentCulture,
                     passed ? TerminalResources.CoverageThresholdPassed : TerminalResources.CoverageThresholdFailed,
-                    entry.Value.ToString("F1", CultureInfo.CurrentCulture),
-                    entry.Threshold.ToString("F1", CultureInfo.CurrentCulture));
+                    entry.Value.ToString("F1", CultureInfo.InvariantCulture),
+                    entry.Threshold.ToString("F1", CultureInfo.InvariantCulture));
                 terminal.AppendLine($"{entry.CoverageType} ({entry.Statistic}): {comparison}");
                 terminal.ResetColor();
             }
