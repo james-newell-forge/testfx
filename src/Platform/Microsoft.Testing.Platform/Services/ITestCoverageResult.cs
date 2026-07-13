@@ -13,4 +13,10 @@ internal interface ITestCoverageResult : IDataConsumer
     IReadOnlyList<TestCoverageThresholdMessage> ThresholdEntries { get; }
 
     IReadOnlyList<TestCoverageMessage> CoverageEntries { get; }
+
+    /// <summary>
+    /// Clears all accumulated coverage entries and the threshold-failure verdict. Used to reset the
+    /// per-session state between hot-reload cycles, which reuse the same application-scoped instance.
+    /// </summary>
+    void Reset();
 }

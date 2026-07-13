@@ -49,6 +49,18 @@ internal static partial class TerminalResources
 
     internal static string @CoverageThresholdResults => GetResourceString("CoverageThresholdResults");
 
+    internal static string @CoverageThresholdStatisticAverage => GetResourceString("CoverageThresholdStatisticAverage");
+
+    internal static string @CoverageThresholdStatisticMinimum => GetResourceString("CoverageThresholdStatisticMinimum");
+
+    internal static string @CoverageThresholdStatisticTotal => GetResourceString("CoverageThresholdStatisticTotal");
+
+    internal static string @CoverageTypeBranch => GetResourceString("CoverageTypeBranch");
+
+    internal static string @CoverageTypeLine => GetResourceString("CoverageTypeLine");
+
+    internal static string @CoverageTypeMethod => GetResourceString("CoverageTypeMethod");
+
     internal static string @DiscoveredTestsInAssembly => GetResourceString("DiscoveredTestsInAssembly");
 
     internal static string @DiscoveredTestsSummary => GetResourceString("DiscoveredTestsSummary");

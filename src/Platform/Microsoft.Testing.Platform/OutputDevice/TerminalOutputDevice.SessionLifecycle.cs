@@ -85,6 +85,11 @@ internal sealed partial class TerminalOutputDevice
 
         RoslynDebug.Assert(_terminalTestReporter is not null);
 
+        // Reset the shared coverage accumulator at the start of each session. In hot-reload mode this same
+        // (application-scoped) instance is reused for every cycle, so without this the next session would
+        // reprint the previous session's coverage rows/thresholds and carry over its threshold-failure verdict.
+        _testCoverageResult.Reset();
+
         // Start test execution here, rather than in ShowBanner, because then we know
         // if we are a testHost controller or not, and if we should show progress bar.
         _terminalTestReporter.TestExecutionStarted(_clock.UtcNow, workerCount: 1, isDiscovery: _isListTests, isHelp: false, isRetry: false);

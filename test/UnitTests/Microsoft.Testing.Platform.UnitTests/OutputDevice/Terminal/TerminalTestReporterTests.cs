@@ -661,6 +661,24 @@ public sealed class TerminalTestReporterTests
     }
 
     [TestMethod]
+    public void AppendCoverageSummary_WhenThresholdOnly_DoesNotEmitDoubleBlankLineBeforeHeading()
+    {
+        var stringBuilderConsole = new StringBuilderConsole();
+        TerminalTestReporter terminalReporter = CreateCoverageReporter(stringBuilderConsole, AnsiMode.NoAnsi);
+
+        var failing = new TestCoverageThresholdMessage(75.0, 80.0, CoverageType.Branch, CoverageThresholdStatus.Failed, CoverageThresholdStatistic.Total);
+
+        // No coverage entries, only threshold entries: the leading blank line must not be doubled.
+        terminalReporter.AppendCoverageSummary([], [failing]);
+
+        // With a single block there is no legitimate blank-line separator, so a doubled newline (an extra
+        // blank line) would only come from the spacing bug.
+        string output = stringBuilderConsole.Output.Replace("\r\n", "\n");
+        Assert.Contains("Coverage Threshold Results:", output);
+        Assert.DoesNotContain("\n\n", output);
+    }
+
+    [TestMethod]
     public void AppendCoverageSummary_WhenMixedThresholds_RendersBothPassAndFail()
     {
         var stringBuilderConsole = new StringBuilderConsole();

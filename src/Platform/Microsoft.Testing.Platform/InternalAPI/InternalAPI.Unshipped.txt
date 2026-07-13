@@ -10,6 +10,7 @@ Microsoft.Testing.Platform.Services.CoverageThresholdExitCodePolicy
 Microsoft.Testing.Platform.Services.ITestCoverageResult
 Microsoft.Testing.Platform.Services.ITestCoverageResult.CoverageEntries.get -> System.Collections.Generic.IReadOnlyList<Microsoft.Testing.Platform.Extensions.Messages.TestCoverageMessage!>!
 Microsoft.Testing.Platform.Services.ITestCoverageResult.HasCoverageThresholdFailure.get -> bool
+Microsoft.Testing.Platform.Services.ITestCoverageResult.Reset() -> void
 Microsoft.Testing.Platform.Services.ITestCoverageResult.ThresholdEntries.get -> System.Collections.Generic.IReadOnlyList<Microsoft.Testing.Platform.Extensions.Messages.TestCoverageThresholdMessage!>!
 Microsoft.Testing.Platform.Services.TestCoverageResult
 Microsoft.Testing.Platform.Services.TestCoverageResult.ConsumeAsync(Microsoft.Testing.Platform.Extensions.Messages.IDataProducer! dataProducer, Microsoft.Testing.Platform.Extensions.Messages.IData! value, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task!
@@ -19,6 +20,7 @@ Microsoft.Testing.Platform.Services.TestCoverageResult.Description.get -> string
 Microsoft.Testing.Platform.Services.TestCoverageResult.DisplayName.get -> string!
 Microsoft.Testing.Platform.Services.TestCoverageResult.HasCoverageThresholdFailure.get -> bool
 Microsoft.Testing.Platform.Services.TestCoverageResult.IsEnabledAsync() -> System.Threading.Tasks.Task<bool>!
+Microsoft.Testing.Platform.Services.TestCoverageResult.Reset() -> void
 Microsoft.Testing.Platform.Services.TestCoverageResult.TestCoverageResult() -> void
 Microsoft.Testing.Platform.Services.TestCoverageResult.ThresholdEntries.get -> System.Collections.Generic.IReadOnlyList<Microsoft.Testing.Platform.Extensions.Messages.TestCoverageThresholdMessage!>!
 Microsoft.Testing.Platform.Services.TestCoverageResult.Uid.get -> string!

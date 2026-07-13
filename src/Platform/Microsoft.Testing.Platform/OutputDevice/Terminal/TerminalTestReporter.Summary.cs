@@ -430,13 +430,19 @@ internal sealed partial class TerminalTestReporter
             foreach (TestCoverageMessage entry in coverageEntries)
             {
                 terminal.Append(DoubleIndentation);
-                terminal.AppendLine($"{entry.ModuleName} - {entry.CoverageType}: {entry.Value.ToString("F1", CultureInfo.InvariantCulture)}%");
+                terminal.AppendLine($"{entry.ModuleName} - {GetCoverageTypeLabel(entry.CoverageType)}: {entry.Value.ToString("F1", CultureInfo.InvariantCulture)}%");
             }
         }
 
         if (thresholdEntries.Count > 0)
         {
-            terminal.AppendLine();
+            // Only separate from the coverage block above when it was actually rendered; otherwise the
+            // unconditional blank line at the top of the method already provides the single leading blank.
+            if (coverageEntries.Count > 0)
+            {
+                terminal.AppendLine();
+            }
+
             terminal.AppendLine($"{SingleIndentation}{TerminalResources.CoverageThresholdResults}");
 
             foreach (TestCoverageThresholdMessage entry in thresholdEntries)
@@ -449,9 +455,31 @@ internal sealed partial class TerminalTestReporter
                     passed ? TerminalResources.CoverageThresholdPassed : TerminalResources.CoverageThresholdFailed,
                     entry.Value.ToString("F1", CultureInfo.InvariantCulture),
                     entry.Threshold.ToString("F1", CultureInfo.InvariantCulture));
-                terminal.AppendLine($"{entry.CoverageType} ({entry.Statistic}): {comparison}");
+                terminal.AppendLine($"{GetCoverageTypeLabel(entry.CoverageType)} ({GetCoverageStatisticLabel(entry.Statistic)}): {comparison}");
                 terminal.ResetColor();
             }
         }
     }
+
+    // Maps the CoverageType enum to a localized label so localized runs don't render the English enum
+    // identifier; falls back to the identifier for any future enum member without a resource.
+    private static string GetCoverageTypeLabel(CoverageType coverageType)
+        => coverageType switch
+        {
+            CoverageType.Line => TerminalResources.CoverageTypeLine,
+            CoverageType.Branch => TerminalResources.CoverageTypeBranch,
+            CoverageType.Method => TerminalResources.CoverageTypeMethod,
+            _ => coverageType.ToString(),
+        };
+
+    // Maps the CoverageThresholdStatistic enum to a localized label so localized runs don't render the
+    // English enum identifier; falls back to the identifier for any future enum member without a resource.
+    private static string GetCoverageStatisticLabel(CoverageThresholdStatistic statistic)
+        => statistic switch
+        {
+            CoverageThresholdStatistic.Minimum => TerminalResources.CoverageThresholdStatisticMinimum,
+            CoverageThresholdStatistic.Total => TerminalResources.CoverageThresholdStatisticTotal,
+            CoverageThresholdStatistic.Average => TerminalResources.CoverageThresholdStatisticAverage,
+            _ => statistic.ToString(),
+        };
 }

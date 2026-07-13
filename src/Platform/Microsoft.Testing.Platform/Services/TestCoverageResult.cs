@@ -28,6 +28,13 @@ internal sealed class TestCoverageResult : ITestCoverageResult
 
     public Task<bool> IsEnabledAsync() => Task.FromResult(true);
 
+    public void Reset()
+    {
+        _coverageEntries.Clear();
+        _thresholdEntries.Clear();
+        HasCoverageThresholdFailure = false;
+    }
+
     public Task ConsumeAsync(IDataProducer dataProducer, IData value, CancellationToken cancellationToken)
     {
         switch (value)
