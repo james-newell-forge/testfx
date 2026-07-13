@@ -48,6 +48,23 @@ public sealed class CoverageThresholdControllerExitCodeTests : AcceptanceTestBas
         testHostResult.AssertExitCodeIs(ExitCode.Success);
     }
 
+    [DynamicData(nameof(TargetFrameworks.AllForDynamicData), typeof(TargetFrameworks))]
+    [TestMethod]
+    public async Task FailedThreshold_InController_WithIgnoreExitCode_ReturnsSuccess(string currentTfm)
+    {
+        var testHost = TestInfrastructure.TestHost.LocateFrom(AssetFixture.TargetAssetPath, AssetName, currentTfm);
+        TestHostResult testHostResult = await testHost.ExecuteAsync(
+            command: "--ignore-exit-code 14",
+            environmentVariables: new Dictionary<string, string?>
+            {
+                ["COVERAGE_THRESHOLD_STATUS"] = "Failed",
+            },
+            cancellationToken: TestContext.CancellationToken);
+
+        // The controller-side coverage-threshold verdict must also honor '--ignore-exit-code 14'.
+        testHostResult.AssertExitCodeIs(ExitCode.Success);
+    }
+
     public sealed class TestAssetFixture() : TestAssetFixtureBase()
     {
         private const string Sources = """

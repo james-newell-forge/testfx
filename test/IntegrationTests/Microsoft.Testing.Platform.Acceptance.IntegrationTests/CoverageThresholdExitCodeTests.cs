@@ -66,6 +66,25 @@ public sealed class CoverageThresholdExitCodeTests : AcceptanceTestBase<Coverage
         testHostResult.AssertExitCodeIs(ExitCode.AtLeastOneTestFailed);
     }
 
+    [DynamicData(nameof(TargetFrameworks.AllForDynamicData), typeof(TargetFrameworks))]
+    [TestMethod]
+    public async Task FailedThreshold_WithIgnoreExitCode_ReturnsSuccess(string currentTfm)
+    {
+        var testHost = TestInfrastructure.TestHost.LocateFrom(AssetFixture.TargetAssetPath, AssetName, currentTfm);
+        TestHostResult testHostResult = await testHost.ExecuteAsync(
+            command: "--ignore-exit-code 14",
+            environmentVariables: new Dictionary<string, string?>
+            {
+                ["COVERAGE_THRESHOLD_STATUS"] = "Failed",
+                ["FAIL_TEST"] = "0",
+            },
+            cancellationToken: TestContext.CancellationToken);
+
+        // '--ignore-exit-code 14' must suppress the coverage-threshold verdict, exactly as it does for
+        // the built-in verdicts.
+        testHostResult.AssertExitCodeIs(ExitCode.Success);
+    }
+
     public sealed class TestAssetFixture() : TestAssetFixtureBase()
     {
         private const string Sources = """

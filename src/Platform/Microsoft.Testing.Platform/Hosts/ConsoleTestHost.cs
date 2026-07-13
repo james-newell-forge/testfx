@@ -96,13 +96,15 @@ internal sealed class ConsoleTestHost(
             statistics = testApplicationResult.GetStatistics();
             exitCode = testApplicationResult.GetProcessExitCode();
 
-            // Check coverage threshold failures
+            // Check coverage threshold failures. GetProcessExitCode() has already applied the ignore-exit-code
+            // policy, so this later coverage verdict must be routed through the same shared policy to let
+            // `--ignore-exit-code 14` suppress a failed threshold, matching every other verdict.
             if (exitCode == (int)ExitCode.Success)
             {
                 ITestCoverageResult? coverageResult = ServiceProvider.GetService<ITestCoverageResult>();
                 if (coverageResult?.HasCoverageThresholdFailure == true)
                 {
-                    exitCode = (int)ExitCode.CoverageThresholdFailed;
+                    exitCode = ExitCodeIgnorePolicy.Apply((int)ExitCode.CoverageThresholdFailed, ServiceProvider.GetCommandLineOptions(), ServiceProvider.GetEnvironment());
                 }
             }
 
