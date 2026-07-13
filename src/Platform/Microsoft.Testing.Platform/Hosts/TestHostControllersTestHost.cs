@@ -416,17 +416,10 @@ internal sealed class TestHostControllersTestHost : CommonHost, IHost, IDisposab
             }
 
             // Check coverage threshold failures after test execution completes. The child test host has
-            // already applied its own ignore-exit-code policy to its exit code, so this parent-side verdict
-            // is routed through the same shared policy so `--ignore-exit-code 14` can ignore a
-            // controller-published threshold failure consistently.
-            if (exitCode == (int)ExitCode.Success)
-            {
-                ITestCoverageResult? coverageResult = ServiceProvider.GetService<ITestCoverageResult>();
-                if (coverageResult?.HasCoverageThresholdFailure == true)
-                {
-                    exitCode = ExitCodeIgnorePolicy.Apply((int)ExitCode.CoverageThresholdFailed, ServiceProvider.GetCommandLineOptions(), _environment);
-                }
-            }
+            // already applied its own ignore-exit-code policy to its exit code; the shared helper applies the
+            // parent-side coverage verdict and routes it through the same policy so `--ignore-exit-code 14`
+            // can ignore a controller-published threshold failure consistently.
+            exitCode = CoverageThresholdExitCodePolicy.Apply(exitCode, ServiceProvider);
 
             await _logger.LogInformationAsync($"TestHostControllersTestHost ended with exit code '{exitCode}' (real test host exit code '{testHostProcess.ExitCode}') in '{consoleRunStarted.Elapsed}'").ConfigureAwait(false);
             await DisposeHelper.DisposeAsync(testHostControllerIpc).ConfigureAwait(false);

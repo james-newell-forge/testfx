@@ -97,16 +97,9 @@ internal sealed class ConsoleTestHost(
             exitCode = testApplicationResult.GetProcessExitCode();
 
             // Check coverage threshold failures. GetProcessExitCode() has already applied the ignore-exit-code
-            // policy, so this later coverage verdict must be routed through the same shared policy to let
-            // `--ignore-exit-code 14` suppress a failed threshold, matching every other verdict.
-            if (exitCode == (int)ExitCode.Success)
-            {
-                ITestCoverageResult? coverageResult = ServiceProvider.GetService<ITestCoverageResult>();
-                if (coverageResult?.HasCoverageThresholdFailure == true)
-                {
-                    exitCode = ExitCodeIgnorePolicy.Apply((int)ExitCode.CoverageThresholdFailed, ServiceProvider.GetCommandLineOptions(), ServiceProvider.GetEnvironment());
-                }
-            }
+            // policy; the shared helper applies the coverage verdict and routes it through the same policy so
+            // `--ignore-exit-code 14` can suppress a failed threshold, matching every other verdict.
+            exitCode = CoverageThresholdExitCodePolicy.Apply(exitCode, ServiceProvider);
 
             await _logger.LogInformationAsync($"Test session '{ServiceProvider.GetTestSessionContext().SessionUid}' ended with exit code '{exitCode}' in {consoleRunStarted.Elapsed}").ConfigureAwait(false);
 
