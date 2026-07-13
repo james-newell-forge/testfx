@@ -8,7 +8,7 @@ namespace Microsoft.Testing.Platform.Services;
 internal sealed class TestCoverageResult : ITestCoverageResult
 {
     private readonly List<TestCoverageMessage> _coverageEntries = [];
-    private readonly List<TestCoverageThresholdMessage> _thresholdFailures = [];
+    private readonly List<TestCoverageThresholdMessage> _thresholdEntries = [];
 
     public string Uid => nameof(TestCoverageResult);
 
@@ -20,9 +20,9 @@ internal sealed class TestCoverageResult : ITestCoverageResult
 
     public Type[] DataTypesConsumed { get; } = [typeof(TestCoverageMessage), typeof(TestCoverageThresholdMessage)];
 
-    public bool HasCoverageThresholdFailure => _thresholdFailures.Count > 0;
+    public bool HasCoverageThresholdFailure { get; private set; }
 
-    public IReadOnlyList<TestCoverageThresholdMessage> ThresholdFailures => _thresholdFailures;
+    public IReadOnlyList<TestCoverageThresholdMessage> ThresholdEntries => _thresholdEntries;
 
     public IReadOnlyList<TestCoverageMessage> CoverageEntries => _coverageEntries;
 
@@ -37,9 +37,10 @@ internal sealed class TestCoverageResult : ITestCoverageResult
                 break;
 
             case TestCoverageThresholdMessage thresholdMessage:
+                _thresholdEntries.Add(thresholdMessage);
                 if (thresholdMessage.Status == CoverageThresholdStatus.Failed)
                 {
-                    _thresholdFailures.Add(thresholdMessage);
+                    HasCoverageThresholdFailure = true;
                 }
 
                 break;

@@ -449,7 +449,7 @@ internal sealed partial class TerminalTestReporter
                     passed ? TerminalResources.CoverageThresholdPassed : TerminalResources.CoverageThresholdFailed,
                     entry.Value.ToString("F1", CultureInfo.CurrentCulture),
                     entry.Threshold.ToString("F1", CultureInfo.CurrentCulture));
-                terminal.AppendLine($"{entry.CoverageType} ({entry.Stat}): {comparison}");
+                terminal.AppendLine($"{entry.CoverageType} ({entry.Statistic}): {comparison}");
                 terminal.ResetColor();
             }
         }

@@ -295,13 +295,6 @@ internal sealed partial class TerminalOutputDevice
                 }
 
                 break;
-            case TestCoverageMessage coverageMessage:
-                _coverageEntries.Add(coverageMessage);
-                break;
-
-            case TestCoverageThresholdMessage thresholdMessage:
-                _coverageThresholdEntries.Add(thresholdMessage);
-                break;
         }
 
         return Task.CompletedTask;

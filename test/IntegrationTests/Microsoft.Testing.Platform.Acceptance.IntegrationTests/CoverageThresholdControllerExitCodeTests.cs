@@ -143,11 +143,11 @@ public class CoverageThresholdLifetimeHandler : ITestHostProcessLifetimeHandler,
         string? thresholdStatus = Environment.GetEnvironmentVariable("COVERAGE_THRESHOLD_STATUS");
         if (thresholdStatus == "Failed")
         {
-            await _messageBus.PublishAsync(this, new TestCoverageThresholdMessage(70.0, 80.0, CoverageType.Line, CoverageThresholdStatus.Failed, CoverageThresholdStat.Minimum));
+            await _messageBus.PublishAsync(this, new TestCoverageThresholdMessage(70.0, 80.0, CoverageType.Line, CoverageThresholdStatus.Failed, CoverageThresholdStatistic.Minimum));
         }
         else if (thresholdStatus == "Passed")
         {
-            await _messageBus.PublishAsync(this, new TestCoverageThresholdMessage(90.0, 80.0, CoverageType.Line, CoverageThresholdStatus.Passed, CoverageThresholdStat.Minimum));
+            await _messageBus.PublishAsync(this, new TestCoverageThresholdMessage(90.0, 80.0, CoverageType.Line, CoverageThresholdStatus.Passed, CoverageThresholdStatistic.Minimum));
         }
     }
 }

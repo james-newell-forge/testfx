@@ -627,7 +627,7 @@ public sealed class TerminalTestReporterTests
         var stringBuilderConsole = new StringBuilderConsole();
         TerminalTestReporter terminalReporter = CreateCoverageReporter(stringBuilderConsole, AnsiMode.NoAnsi);
 
-        var passing = new TestCoverageThresholdMessage(85.5, 80.0, CoverageType.Line, CoverageThresholdStatus.Passed, CoverageThresholdStat.Minimum);
+        var passing = new TestCoverageThresholdMessage(85.5, 80.0, CoverageType.Line, CoverageThresholdStatus.Passed, CoverageThresholdStatistic.Minimum);
 
         terminalReporter.AppendCoverageSummary([], [passing]);
 
@@ -648,7 +648,7 @@ public sealed class TerminalTestReporterTests
         var stringBuilderConsole = new StringBuilderConsole();
         TerminalTestReporter terminalReporter = CreateCoverageReporter(stringBuilderConsole, AnsiMode.NoAnsi);
 
-        var failing = new TestCoverageThresholdMessage(75.0, 80.0, CoverageType.Branch, CoverageThresholdStatus.Failed, CoverageThresholdStat.Total);
+        var failing = new TestCoverageThresholdMessage(75.0, 80.0, CoverageType.Branch, CoverageThresholdStatus.Failed, CoverageThresholdStatistic.Total);
 
         terminalReporter.AppendCoverageSummary([], [failing]);
 
@@ -666,8 +666,8 @@ public sealed class TerminalTestReporterTests
         var stringBuilderConsole = new StringBuilderConsole();
         TerminalTestReporter terminalReporter = CreateCoverageReporter(stringBuilderConsole, AnsiMode.NoAnsi);
 
-        var passing = new TestCoverageThresholdMessage(90.0, 80.0, CoverageType.Line, CoverageThresholdStatus.Passed, CoverageThresholdStat.Minimum);
-        var failing = new TestCoverageThresholdMessage(70.0, 80.0, CoverageType.Method, CoverageThresholdStatus.Failed, CoverageThresholdStat.Average);
+        var passing = new TestCoverageThresholdMessage(90.0, 80.0, CoverageType.Line, CoverageThresholdStatus.Passed, CoverageThresholdStatistic.Minimum);
+        var failing = new TestCoverageThresholdMessage(70.0, 80.0, CoverageType.Method, CoverageThresholdStatus.Failed, CoverageThresholdStatistic.Average);
 
         terminalReporter.AppendCoverageSummary([], [passing, failing]);
 
@@ -684,8 +684,8 @@ public sealed class TerminalTestReporterTests
         var stringBuilderConsole = new StringBuilderConsole();
         TerminalTestReporter terminalReporter = CreateCoverageReporter(stringBuilderConsole, AnsiMode.ForceAnsi);
 
-        var passing = new TestCoverageThresholdMessage(90.0, 80.0, CoverageType.Line, CoverageThresholdStatus.Passed, CoverageThresholdStat.Minimum);
-        var failing = new TestCoverageThresholdMessage(70.0, 80.0, CoverageType.Branch, CoverageThresholdStatus.Failed, CoverageThresholdStat.Total);
+        var passing = new TestCoverageThresholdMessage(90.0, 80.0, CoverageType.Line, CoverageThresholdStatus.Passed, CoverageThresholdStatistic.Minimum);
+        var failing = new TestCoverageThresholdMessage(70.0, 80.0, CoverageType.Branch, CoverageThresholdStatus.Failed, CoverageThresholdStatistic.Total);
 
         terminalReporter.AppendCoverageSummary([], [passing, failing]);
 

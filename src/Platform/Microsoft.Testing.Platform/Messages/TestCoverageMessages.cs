@@ -62,7 +62,7 @@ public sealed class TestCoverageMessage : PropertyBagData
 /// <summary>
 /// Represents the statistical method used for the threshold comparison.
 /// </summary>
-public enum CoverageThresholdStat
+public enum CoverageThresholdStatistic
 {
     /// <summary>
     /// Minimum coverage across all modules.
@@ -108,15 +108,15 @@ public sealed class TestCoverageThresholdMessage : PropertyBagData
     /// <param name="threshold">The required threshold value.</param>
     /// <param name="coverageType">The type of coverage measurement.</param>
     /// <param name="status">The pass/fail status of the threshold check.</param>
-    /// <param name="stat">The statistical method used for comparison.</param>
-    public TestCoverageThresholdMessage(double value, double threshold, CoverageType coverageType, CoverageThresholdStatus status, CoverageThresholdStat stat)
+    /// <param name="statistic">The statistical method used for comparison.</param>
+    public TestCoverageThresholdMessage(double value, double threshold, CoverageType coverageType, CoverageThresholdStatus status, CoverageThresholdStatistic statistic)
         : base("Test coverage threshold", "Reports the result of a coverage threshold evaluation.")
     {
         Value = value;
         Threshold = threshold;
         CoverageType = coverageType;
         Status = status;
-        Stat = stat;
+        Statistic = statistic;
     }
 
     /// <summary>
@@ -142,5 +142,5 @@ public sealed class TestCoverageThresholdMessage : PropertyBagData
     /// <summary>
     /// Gets the statistical method used for comparison.
     /// </summary>
-    public CoverageThresholdStat Stat { get; }
+    public CoverageThresholdStatistic Statistic { get; }
 }

@@ -10,7 +10,7 @@ internal interface ITestCoverageResult : IDataConsumer
 {
     bool HasCoverageThresholdFailure { get; }
 
-    IReadOnlyList<TestCoverageThresholdMessage> ThresholdFailures { get; }
+    IReadOnlyList<TestCoverageThresholdMessage> ThresholdEntries { get; }
 
     IReadOnlyList<TestCoverageMessage> CoverageEntries { get; }
 }

@@ -5,10 +5,10 @@
 Microsoft.Testing.Platform.Services.IArtifactNamingService
 Microsoft.Testing.Platform.Services.IArtifactNamingService.ResolveFileName(string! template) -> string!
 static Microsoft.Testing.Platform.Services.ServiceProviderExtensions.GetArtifactNamingService(this System.IServiceProvider! serviceProvider) -> Microsoft.Testing.Platform.Services.IArtifactNamingService!
-Microsoft.Testing.Platform.Extensions.Messages.CoverageThresholdStat
-Microsoft.Testing.Platform.Extensions.Messages.CoverageThresholdStat.Average = 2 -> Microsoft.Testing.Platform.Extensions.Messages.CoverageThresholdStat
-Microsoft.Testing.Platform.Extensions.Messages.CoverageThresholdStat.Minimum = 0 -> Microsoft.Testing.Platform.Extensions.Messages.CoverageThresholdStat
-Microsoft.Testing.Platform.Extensions.Messages.CoverageThresholdStat.Total = 1 -> Microsoft.Testing.Platform.Extensions.Messages.CoverageThresholdStat
+Microsoft.Testing.Platform.Extensions.Messages.CoverageThresholdStatistic
+Microsoft.Testing.Platform.Extensions.Messages.CoverageThresholdStatistic.Average = 2 -> Microsoft.Testing.Platform.Extensions.Messages.CoverageThresholdStatistic
+Microsoft.Testing.Platform.Extensions.Messages.CoverageThresholdStatistic.Minimum = 0 -> Microsoft.Testing.Platform.Extensions.Messages.CoverageThresholdStatistic
+Microsoft.Testing.Platform.Extensions.Messages.CoverageThresholdStatistic.Total = 1 -> Microsoft.Testing.Platform.Extensions.Messages.CoverageThresholdStatistic
 Microsoft.Testing.Platform.Extensions.Messages.CoverageThresholdStatus
 Microsoft.Testing.Platform.Extensions.Messages.CoverageThresholdStatus.Failed = 1 -> Microsoft.Testing.Platform.Extensions.Messages.CoverageThresholdStatus
 Microsoft.Testing.Platform.Extensions.Messages.CoverageThresholdStatus.Passed = 0 -> Microsoft.Testing.Platform.Extensions.Messages.CoverageThresholdStatus
@@ -23,8 +23,8 @@ Microsoft.Testing.Platform.Extensions.Messages.TestCoverageMessage.TestCoverageM
 Microsoft.Testing.Platform.Extensions.Messages.TestCoverageMessage.Value.get -> double
 Microsoft.Testing.Platform.Extensions.Messages.TestCoverageThresholdMessage
 Microsoft.Testing.Platform.Extensions.Messages.TestCoverageThresholdMessage.CoverageType.get -> Microsoft.Testing.Platform.Extensions.Messages.CoverageType
-Microsoft.Testing.Platform.Extensions.Messages.TestCoverageThresholdMessage.Stat.get -> Microsoft.Testing.Platform.Extensions.Messages.CoverageThresholdStat
+Microsoft.Testing.Platform.Extensions.Messages.TestCoverageThresholdMessage.Statistic.get -> Microsoft.Testing.Platform.Extensions.Messages.CoverageThresholdStatistic
 Microsoft.Testing.Platform.Extensions.Messages.TestCoverageThresholdMessage.Status.get -> Microsoft.Testing.Platform.Extensions.Messages.CoverageThresholdStatus
-Microsoft.Testing.Platform.Extensions.Messages.TestCoverageThresholdMessage.TestCoverageThresholdMessage(double value, double threshold, Microsoft.Testing.Platform.Extensions.Messages.CoverageType coverageType, Microsoft.Testing.Platform.Extensions.Messages.CoverageThresholdStatus status, Microsoft.Testing.Platform.Extensions.Messages.CoverageThresholdStat stat) -> void
+Microsoft.Testing.Platform.Extensions.Messages.TestCoverageThresholdMessage.TestCoverageThresholdMessage(double value, double threshold, Microsoft.Testing.Platform.Extensions.Messages.CoverageType coverageType, Microsoft.Testing.Platform.Extensions.Messages.CoverageThresholdStatus status, Microsoft.Testing.Platform.Extensions.Messages.CoverageThresholdStatistic statistic) -> void
 Microsoft.Testing.Platform.Extensions.Messages.TestCoverageThresholdMessage.Threshold.get -> double
 Microsoft.Testing.Platform.Extensions.Messages.TestCoverageThresholdMessage.Value.get -> double

@@ -173,6 +173,10 @@ internal sealed partial class TestHostBuilder
         // Reuse the shared helper so the pipe-protocol detection stays in one place.
         bool isPipeProtocol = context.CommandLineHandler.HasDotnetTestServerOption();
 
+        // Register the single coverage accumulator before the output device is built so the terminal
+        // output device can read from it (rather than buffering its own copy of the coverage messages).
+        serviceProvider.AddService(new TestCoverageResult());
+
         context.ProxyOutputDevice = await _outputDisplay.BuildAsync(serviceProvider, context.IsJsonRpcProtocol, isPipeProtocol).ConfigureAwait(false);
 
         if (loggingState.FileLoggerProvider is not null)
@@ -319,8 +323,6 @@ internal sealed partial class TestHostBuilder
             serviceProvider.GetEnvironment(),
             context.PoliciesService,
             serviceProvider.GetPlatformOTelService()));
-
-        serviceProvider.AddService(new TestCoverageResult());
 
         ChatClientManager.BuildChatClients(serviceProvider);
 
