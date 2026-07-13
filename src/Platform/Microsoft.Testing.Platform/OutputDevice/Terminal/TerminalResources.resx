@@ -335,4 +335,20 @@ Valid values are 'All', 'Failed', 'None'. Default is 'All' (or 'Failed' when an 
     <value>Discovered {0} tests in {1} assemblies.</value>
     <comment>dotnet test orchestrator discovery total across multiple assemblies. {0} is the discovered test count, {1} the assembly count.</comment>
   </data>
+  <data name="CodeCoverageSummary" xml:space="preserve">
+    <value>Code Coverage Summary:</value>
+    <comment>Heading printed before the per-module code coverage percentages in the run summary.</comment>
+  </data>
+  <data name="CoverageThresholdResults" xml:space="preserve">
+    <value>Coverage Threshold Results:</value>
+    <comment>Heading printed before the coverage threshold pass/fail comparisons in the run summary.</comment>
+  </data>
+  <data name="CoverageThresholdPassed" xml:space="preserve">
+    <value>{0}% &gt;= {1}% threshold</value>
+    <comment>Coverage threshold comparison shown when the threshold is met. {0} is the actual coverage percentage, {1} is the threshold percentage.</comment>
+  </data>
+  <data name="CoverageThresholdFailed" xml:space="preserve">
+    <value>{0}% &lt; {1}% threshold</value>
+    <comment>Coverage threshold comparison shown when the threshold is not met. {0} is the actual coverage percentage, {1} is the threshold percentage.</comment>
+  </data>
 </root>

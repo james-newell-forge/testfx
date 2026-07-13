@@ -39,7 +39,15 @@ internal static partial class TerminalResources
 
     internal static string @CancellingTestSession => GetResourceString("CancellingTestSession");
 
+    internal static string @CodeCoverageSummary => GetResourceString("CodeCoverageSummary");
+
     internal static string @ConsoleIsAlreadyInBatchingMode => GetResourceString("ConsoleIsAlreadyInBatchingMode");
+
+    internal static string @CoverageThresholdFailed => GetResourceString("CoverageThresholdFailed");
+
+    internal static string @CoverageThresholdPassed => GetResourceString("CoverageThresholdPassed");
+
+    internal static string @CoverageThresholdResults => GetResourceString("CoverageThresholdResults");
 
     internal static string @DiscoveredTestsInAssembly => GetResourceString("DiscoveredTestsInAssembly");
 

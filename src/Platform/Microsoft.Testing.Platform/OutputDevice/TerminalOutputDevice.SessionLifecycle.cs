@@ -168,6 +168,8 @@ internal sealed partial class TerminalOutputDevice
             if (_coverageEntries.Count > 0 || _coverageThresholdEntries.Count > 0)
             {
                 _terminalTestReporter.AppendCoverageSummary(_coverageEntries, _coverageThresholdEntries);
+                _coverageEntries.Clear();
+                _coverageThresholdEntries.Clear();
             }
         }
     }

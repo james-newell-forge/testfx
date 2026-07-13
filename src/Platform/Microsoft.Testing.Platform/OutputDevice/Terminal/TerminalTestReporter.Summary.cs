@@ -425,7 +425,7 @@ internal sealed partial class TerminalTestReporter
 
         if (coverageEntries.Count > 0)
         {
-            terminal.AppendLine($"{SingleIndentation}Code Coverage Summary:");
+            terminal.AppendLine($"{SingleIndentation}{TerminalResources.CodeCoverageSummary}");
 
             foreach (TestCoverageMessage entry in coverageEntries)
             {
@@ -437,16 +437,18 @@ internal sealed partial class TerminalTestReporter
         if (thresholdEntries.Count > 0)
         {
             terminal.AppendLine();
-            terminal.AppendLine($"{SingleIndentation}Coverage Threshold Results:");
+            terminal.AppendLine($"{SingleIndentation}{TerminalResources.CoverageThresholdResults}");
 
             foreach (TestCoverageThresholdMessage entry in thresholdEntries)
             {
                 bool passed = entry.Status == CoverageThresholdStatus.Passed;
                 terminal.SetColor(passed ? TerminalColor.DarkGreen : TerminalColor.DarkRed);
                 terminal.Append(DoubleIndentation);
-                string comparison = passed
-                    ? $"{entry.Value:F1}% >= {entry.Threshold:F1}% threshold"
-                    : $"{entry.Value:F1}% < {entry.Threshold:F1}% threshold";
+                string comparison = string.Format(
+                    CultureInfo.CurrentCulture,
+                    passed ? TerminalResources.CoverageThresholdPassed : TerminalResources.CoverageThresholdFailed,
+                    entry.Value.ToString("F1", CultureInfo.CurrentCulture),
+                    entry.Threshold.ToString("F1", CultureInfo.CurrentCulture));
                 terminal.AppendLine($"{entry.CoverageType} ({entry.Stat}): {comparison}");
                 terminal.ResetColor();
             }
