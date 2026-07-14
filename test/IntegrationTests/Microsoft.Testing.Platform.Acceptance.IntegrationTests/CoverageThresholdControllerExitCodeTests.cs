@@ -54,7 +54,7 @@ public sealed class CoverageThresholdControllerExitCodeTests : AcceptanceTestBas
     {
         var testHost = TestInfrastructure.TestHost.LocateFrom(AssetFixture.TargetAssetPath, AssetName, currentTfm);
         TestHostResult testHostResult = await testHost.ExecuteAsync(
-            command: "--ignore-exit-code 14",
+            command: $"--ignore-exit-code {(int)ExitCode.CoverageThresholdFailed}",
             environmentVariables: new Dictionary<string, string?>
             {
                 ["COVERAGE_THRESHOLD_STATUS"] = "Failed",
