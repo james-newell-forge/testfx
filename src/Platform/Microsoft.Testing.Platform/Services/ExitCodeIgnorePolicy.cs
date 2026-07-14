@@ -33,12 +33,13 @@ internal static class ExitCodeIgnorePolicy
 
         if (exitCodeToIgnore is not null)
         {
-            if (ContainsExitCode(exitCodeToIgnore, (int)exitCode))
+            if (ContainsExitCode(exitCodeToIgnore, exitCode))
             {
-                exitCode = ExitCode.Success;
+                exitCode = (int)ExitCode.Success;
             }
         }
-        return (int)exitCode;
+
+        return exitCode;
     }
 
     /// <summary>
