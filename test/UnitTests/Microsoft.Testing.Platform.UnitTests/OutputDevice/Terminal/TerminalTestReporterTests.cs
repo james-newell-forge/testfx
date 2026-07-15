@@ -6,6 +6,7 @@ using Microsoft.Testing.Platform.Helpers;
 using Microsoft.Testing.Platform.OutputDevice.Terminal;
 using Microsoft.Testing.Platform.Resources;
 using Microsoft.Testing.Platform.Services;
+using Microsoft.Testing.Platform.TestHost;
 
 namespace Microsoft.Testing.Platform.UnitTests;
 
@@ -627,7 +628,7 @@ public sealed class TerminalTestReporterTests
         var stringBuilderConsole = new StringBuilderConsole();
         TerminalTestReporter terminalReporter = CreateCoverageReporter(stringBuilderConsole, AnsiMode.NoAnsi);
 
-        var passing = new TestCoverageThresholdMessage(85.5, 80.0, CoverageType.Line, CoverageThresholdStatus.Passed, CoverageThresholdStatistic.Minimum);
+        TestCoverageThresholdMessage passing = CreateThreshold(CoverageMetric.Line, CoverageAggregation.Minimum, actual: 85.5, required: 80.0);
 
         terminalReporter.AppendCoverageSummary([], [passing]);
 
@@ -648,7 +649,7 @@ public sealed class TerminalTestReporterTests
         var stringBuilderConsole = new StringBuilderConsole();
         TerminalTestReporter terminalReporter = CreateCoverageReporter(stringBuilderConsole, AnsiMode.NoAnsi);
 
-        var failing = new TestCoverageThresholdMessage(75.0, 80.0, CoverageType.Branch, CoverageThresholdStatus.Failed, CoverageThresholdStatistic.Total);
+        TestCoverageThresholdMessage failing = CreateThreshold(CoverageMetric.Branch, CoverageAggregation.Total, actual: 75.0, required: 80.0);
 
         terminalReporter.AppendCoverageSummary([], [failing]);
 
@@ -661,14 +662,34 @@ public sealed class TerminalTestReporterTests
     }
 
     [TestMethod]
+    public void AppendCoverageSummary_WhenNoCoverableData_UsesTreatNoDataPolicyForPassFail()
+    {
+        var stringBuilderConsole = new StringBuilderConsole();
+        TerminalTestReporter terminalReporter = CreateCoverageReporter(stringBuilderConsole, AnsiMode.NoAnsi);
+
+        // No coverable data with the default no-data-as-failure policy renders as a failure.
+        var noData = new TestCoverageThresholdMessage(
+            new SessionUid("session"), CoverageScope.Overall, CoverageMetric.Line, CoverageAggregation.Total,
+            actualPercentage: 0d, requiredPercentage: 80.0, hasCoverableData: false, producerId: "producer",
+            aggregatedOver: CoverageScopeLevel.Module);
+
+        terminalReporter.AppendCoverageSummary([], [noData]);
+
+        string output = stringBuilderConsole.Output;
+        Assert.Contains("Line (Total):", output);
+        Assert.Contains("<", output);
+        Assert.IsFalse(noData.Passed);
+    }
+
+    [TestMethod]
     public void AppendCoverageSummary_WhenThresholdOnly_DoesNotEmitDoubleBlankLineBeforeHeading()
     {
         var stringBuilderConsole = new StringBuilderConsole();
         TerminalTestReporter terminalReporter = CreateCoverageReporter(stringBuilderConsole, AnsiMode.NoAnsi);
 
-        var failing = new TestCoverageThresholdMessage(75.0, 80.0, CoverageType.Branch, CoverageThresholdStatus.Failed, CoverageThresholdStatistic.Total);
+        TestCoverageThresholdMessage failing = CreateThreshold(CoverageMetric.Branch, CoverageAggregation.Total, actual: 75.0, required: 80.0);
 
-        // No coverage entries, only threshold entries: the leading blank line must not be doubled.
+        // No coverage scopes, only threshold entries: the leading blank line must not be doubled.
         terminalReporter.AppendCoverageSummary([], [failing]);
 
         // With a single block there is no legitimate blank-line separator, so a doubled newline (an extra
@@ -684,8 +705,8 @@ public sealed class TerminalTestReporterTests
         var stringBuilderConsole = new StringBuilderConsole();
         TerminalTestReporter terminalReporter = CreateCoverageReporter(stringBuilderConsole, AnsiMode.NoAnsi);
 
-        var passing = new TestCoverageThresholdMessage(90.0, 80.0, CoverageType.Line, CoverageThresholdStatus.Passed, CoverageThresholdStatistic.Minimum);
-        var failing = new TestCoverageThresholdMessage(70.0, 80.0, CoverageType.Method, CoverageThresholdStatus.Failed, CoverageThresholdStatistic.Average);
+        TestCoverageThresholdMessage passing = CreateThreshold(CoverageMetric.Line, CoverageAggregation.Minimum, actual: 90.0, required: 80.0);
+        TestCoverageThresholdMessage failing = CreateThreshold(CoverageMetric.Method, CoverageAggregation.Average, actual: 70.0, required: 80.0);
 
         terminalReporter.AppendCoverageSummary([], [passing, failing]);
 
@@ -702,8 +723,8 @@ public sealed class TerminalTestReporterTests
         var stringBuilderConsole = new StringBuilderConsole();
         TerminalTestReporter terminalReporter = CreateCoverageReporter(stringBuilderConsole, AnsiMode.ForceAnsi);
 
-        var passing = new TestCoverageThresholdMessage(90.0, 80.0, CoverageType.Line, CoverageThresholdStatus.Passed, CoverageThresholdStatistic.Minimum);
-        var failing = new TestCoverageThresholdMessage(70.0, 80.0, CoverageType.Branch, CoverageThresholdStatus.Failed, CoverageThresholdStatistic.Total);
+        TestCoverageThresholdMessage passing = CreateThreshold(CoverageMetric.Line, CoverageAggregation.Minimum, actual: 90.0, required: 80.0);
+        TestCoverageThresholdMessage failing = CreateThreshold(CoverageMetric.Branch, CoverageAggregation.Total, actual: 70.0, required: 80.0);
 
         terminalReporter.AppendCoverageSummary([], [passing, failing]);
 
@@ -715,19 +736,50 @@ public sealed class TerminalTestReporterTests
     }
 
     [TestMethod]
-    public void AppendCoverageSummary_WhenCoverageEntriesPresent_RendersCoverageSummary()
+    public void AppendCoverageSummary_WhenScopesPresent_RendersCoverageSummaryFromCounts()
     {
         var stringBuilderConsole = new StringBuilderConsole();
         TerminalTestReporter terminalReporter = CreateCoverageReporter(stringBuilderConsole, AnsiMode.NoAnsi);
 
-        var entry = new TestCoverageMessage("MyModule.dll", 85.5, CoverageType.Line);
+        // 855 / 1000 -> 85.5% derived from counts; the whole-run (Overall) scope renders as "Total".
+        var summary = new CoverageScopeSummary(
+            CoverageScope.Overall,
+            [new CoverageMetricResult(CoverageMetric.Line, coveredCount: 855, coverableCount: 1000, producerId: "producer")]);
 
-        terminalReporter.AppendCoverageSummary([entry], []);
+        terminalReporter.AppendCoverageSummary([summary], []);
 
         string output = stringBuilderConsole.Output;
         Assert.Contains("Code Coverage Summary:", output);
-        Assert.Contains("MyModule.dll - Line:", output);
+        Assert.Contains("Total - Line: 85.5%", output);
     }
+
+    [TestMethod]
+    public void AppendCoverageSummary_WhenNamedScope_UsesScopeName()
+    {
+        var stringBuilderConsole = new StringBuilderConsole();
+        TerminalTestReporter terminalReporter = CreateCoverageReporter(stringBuilderConsole, AnsiMode.NoAnsi);
+
+        var summary = new CoverageScopeSummary(
+            new CoverageScope(CoverageScopeLevel.Module, "MyModule.dll"),
+            [new CoverageMetricResult(CoverageMetric.Branch, coveredCount: 3, coverableCount: 4, producerId: "producer")]);
+
+        terminalReporter.AppendCoverageSummary([summary], []);
+
+        string output = stringBuilderConsole.Output;
+        Assert.Contains("MyModule.dll - Branch: 75.0%", output);
+    }
+
+    private static TestCoverageThresholdMessage CreateThreshold(CoverageMetric metric, CoverageAggregation aggregation, double actual, double required)
+        => new(
+            new SessionUid("session"),
+            CoverageScope.Overall,
+            metric,
+            aggregation,
+            actual,
+            required,
+            hasCoverableData: true,
+            producerId: "producer",
+            aggregatedOver: CoverageScopeLevel.Module);
 
     private static TerminalTestReporter CreateCoverageReporter(StringBuilderConsole console, AnsiMode ansiMode)
         => new(console, static () => false, new TerminalTestReporterOptions

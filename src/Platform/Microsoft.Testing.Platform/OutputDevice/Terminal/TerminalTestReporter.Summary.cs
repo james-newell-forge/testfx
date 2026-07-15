@@ -3,6 +3,7 @@
 
 using Microsoft.Testing.Platform.Extensions.Messages;
 using Microsoft.Testing.Platform.Helpers;
+using Microsoft.Testing.Platform.Services;
 
 namespace Microsoft.Testing.Platform.OutputDevice.Terminal;
 
@@ -411,75 +412,100 @@ internal sealed partial class TerminalTestReporter
         terminal.AppendLine();
     }
 
-    internal void AppendCoverageSummary(IReadOnlyList<TestCoverageMessage> coverageEntries, IReadOnlyList<TestCoverageThresholdMessage> thresholdEntries)
-        => _terminalWithProgress.WriteToTerminal(terminal => AppendCoverageSummary(terminal, coverageEntries, thresholdEntries));
+    internal void AppendCoverageSummary(IReadOnlyList<CoverageScopeSummary> scopes, IReadOnlyList<TestCoverageThresholdMessage> thresholds)
+        => _terminalWithProgress.WriteToTerminal(terminal => AppendCoverageSummary(terminal, scopes, thresholds));
 
-    private static void AppendCoverageSummary(ITerminal terminal, IReadOnlyList<TestCoverageMessage> coverageEntries, IReadOnlyList<TestCoverageThresholdMessage> thresholdEntries)
+    private static void AppendCoverageSummary(ITerminal terminal, IReadOnlyList<CoverageScopeSummary> scopes, IReadOnlyList<TestCoverageThresholdMessage> thresholds)
     {
-        if (coverageEntries.Count == 0 && thresholdEntries.Count == 0)
+        if (scopes.Count == 0 && thresholds.Count == 0)
         {
             return;
         }
 
         terminal.AppendLine();
 
-        if (coverageEntries.Count > 0)
+        if (scopes.Count > 0)
         {
             terminal.AppendLine($"{SingleIndentation}{TerminalResources.CodeCoverageSummary}");
 
-            foreach (TestCoverageMessage entry in coverageEntries)
+            foreach (CoverageScopeSummary scope in scopes)
             {
-                terminal.Append(DoubleIndentation);
-                terminal.AppendLine($"{entry.ModuleName} - {GetCoverageTypeLabel(entry.CoverageType)}: {entry.Value.ToString("F1", CultureInfo.CurrentCulture)}%");
+                string scopeLabel = GetCoverageScopeLabel(scope.Scope);
+                foreach (CoverageMetricResult metric in scope.Metrics)
+                {
+                    terminal.Append(DoubleIndentation);
+                    string percentage = metric.HasCoverableData
+                        ? metric.Percentage.ToString("F1", CultureInfo.InvariantCulture)
+                        : TerminalResources.CoverageNoData;
+                    terminal.AppendLine($"{scopeLabel} - {GetCoverageMetricLabel(metric.Metric, metric.CustomMetricName)}: {percentage}%");
+                }
             }
         }
 
-        if (thresholdEntries.Count > 0)
+        if (thresholds.Count > 0)
         {
             // Only separate from the coverage block above when it was actually rendered; otherwise the
             // unconditional blank line at the top of the method already provides the single leading blank.
-            if (coverageEntries.Count > 0)
+            if (scopes.Count > 0)
             {
                 terminal.AppendLine();
             }
 
             terminal.AppendLine($"{SingleIndentation}{TerminalResources.CoverageThresholdResults}");
 
-            foreach (TestCoverageThresholdMessage entry in thresholdEntries)
+            foreach (TestCoverageThresholdMessage threshold in thresholds)
             {
-                bool passed = entry.Status == CoverageThresholdStatus.Passed;
+                bool passed = threshold.Passed;
                 terminal.SetColor(passed ? TerminalColor.DarkGreen : TerminalColor.DarkRed);
                 terminal.Append(DoubleIndentation);
                 string comparison = string.Format(
-                    CultureInfo.CurrentCulture,
+                    CultureInfo.InvariantCulture,
                     passed ? TerminalResources.CoverageThresholdPassed : TerminalResources.CoverageThresholdFailed,
-                    entry.Value.ToString("F1", CultureInfo.CurrentCulture),
-                    entry.Threshold.ToString("F1", CultureInfo.CurrentCulture));
-                terminal.AppendLine($"{GetCoverageTypeLabel(entry.CoverageType)} ({GetCoverageStatisticLabel(entry.Statistic)}): {comparison}");
+                    threshold.ActualPercentage.ToString("F1", CultureInfo.InvariantCulture),
+                    threshold.RequiredPercentage.ToString("F1", CultureInfo.InvariantCulture));
+                terminal.AppendLine($"{GetCoverageMetricLabel(threshold.Metric, threshold.CustomMetricName)}{GetCoverageAggregationSuffix(threshold.Aggregation)}: {comparison}");
                 terminal.ResetColor();
             }
         }
     }
 
-    // Maps the CoverageType enum to a localized label so localized runs don't render the English enum
-    // identifier; falls back to the identifier for any future enum member without a resource.
-    private static string GetCoverageTypeLabel(CoverageType coverageType)
-        => coverageType switch
+    // Renders the scope identity used in the coverage summary; the whole-run (Overall) scope is shown
+    // with a localized "Total" label, every other scope uses its own name.
+    private static string GetCoverageScopeLabel(CoverageScope scope)
+        => scope.Level == CoverageScopeLevel.Overall
+            ? TerminalResources.CoverageScopeOverall
+            : scope.Name ?? scope.Level.ToString();
+
+    // Maps the CoverageMetric enum to a localized label so localized runs don't render the English enum
+    // identifier; falls back to the identifier (or custom name) for any member without a resource.
+    private static string GetCoverageMetricLabel(CoverageMetric metric, string? customMetricName)
+        => metric switch
         {
-            CoverageType.Line => TerminalResources.CoverageTypeLine,
-            CoverageType.Branch => TerminalResources.CoverageTypeBranch,
-            CoverageType.Method => TerminalResources.CoverageTypeMethod,
-            _ => coverageType.ToString(),
+            CoverageMetric.Line => TerminalResources.CoverageMetricLine,
+            CoverageMetric.Statement => TerminalResources.CoverageMetricStatement,
+            CoverageMetric.Branch => TerminalResources.CoverageMetricBranch,
+            CoverageMetric.Method => TerminalResources.CoverageMetricMethod,
+            CoverageMetric.Function => TerminalResources.CoverageMetricFunction,
+            CoverageMetric.Block => TerminalResources.CoverageMetricBlock,
+            CoverageMetric.Instruction => TerminalResources.CoverageMetricInstruction,
+            CoverageMetric.Region => TerminalResources.CoverageMetricRegion,
+            CoverageMetric.Class => TerminalResources.CoverageMetricClass,
+            CoverageMetric.Condition => TerminalResources.CoverageMetricCondition,
+            CoverageMetric.Complexity => TerminalResources.CoverageMetricComplexity,
+            CoverageMetric.Custom => customMetricName ?? nameof(CoverageMetric.Custom),
+            _ => metric.ToString(),
         };
 
-    // Maps the CoverageThresholdStatistic enum to a localized label so localized runs don't render the
-    // English enum identifier; falls back to the identifier for any future enum member without a resource.
-    private static string GetCoverageStatisticLabel(CoverageThresholdStatistic statistic)
-        => statistic switch
+    // Renders the aggregation qualifier shown in parentheses after the metric in a threshold line, e.g.
+    // "Line (Total)". A non-aggregate (None) evaluation renders no qualifier.
+    private static string GetCoverageAggregationSuffix(CoverageAggregation aggregation)
+        => aggregation switch
         {
-            CoverageThresholdStatistic.Minimum => TerminalResources.CoverageThresholdStatisticMinimum,
-            CoverageThresholdStatistic.Total => TerminalResources.CoverageThresholdStatisticTotal,
-            CoverageThresholdStatistic.Average => TerminalResources.CoverageThresholdStatisticAverage,
-            _ => statistic.ToString(),
+            CoverageAggregation.None => string.Empty,
+            CoverageAggregation.Total => $" ({TerminalResources.CoverageAggregationTotal})",
+            CoverageAggregation.Minimum => $" ({TerminalResources.CoverageAggregationMinimum})",
+            CoverageAggregation.Average => $" ({TerminalResources.CoverageAggregationAverage})",
+            CoverageAggregation.Maximum => $" ({TerminalResources.CoverageAggregationMaximum})",
+            _ => $" ({aggregation})",
         };
 }
